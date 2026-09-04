@@ -1,108 +1,1176 @@
 "use client";
-import {useEffect,useMemo,useRef,useState} from "react";
 
-const DATA={
-typing:"Leadership is important in today's workplace because effective leaders help teams stay focused on common goals. A good leader listens to employees, communicates expectations clearly, and provides useful feedback. Leadership is not simply about giving instructions; it is also about supporting people when problems arise. When employees trust their leaders, they are more likely to share ideas, take responsibility, and work together to improve results.",
-sentences:[
-["The customer asked us to provide a more detailed explanation of the billing ______.","breakdown"],["Please ______ the report carefully before sending it to the manager.","review"],["The company introduced a new policy to improve employee ______.","retention"],["We need to reach an agreement that is fair to ______ parties.","both"],["The meeting was postponed ______ several team members were unavailable.","because"],["The support team responded ______ to the customer's request.","promptly"],["Employees are encouraged to ______ feedback after completing the training.","provide"],["The project was completed on time despite several unexpected ______.","delays"],["Please make sure that all documents are ______ before the meeting.","available"],["The manager asked whether we could ______ the deadline by two days.","extend"],["Good communication can help prevent unnecessary ______ between colleagues.","misunderstandings"],["The new system is expected to ______ the way customer requests are handled.","streamline"],["We should consider the cost ______ before making a final decision.","implications"],["The team worked together to ______ the technical issue.","resolve"],["I would appreciate your ______ on the proposed schedule.","feedback"],["The company offers flexible working arrangements to improve employee ______.","satisfaction"],["Before making a decision, we should ______ all the available options.","consider"],["The training session will focus ______ customer communication skills.","on"],["The manager praised the employee for handling the situation ______.","professionally"],["Please let me know if you require any ______ information.","additional"]
-],
-dictation:["Could you send me the updated schedule before the end of the day?","The customer was satisfied after the support team resolved the issue.","We should discuss the proposal before making a final decision.","Please remember to attach the document to your email.","The meeting has been moved to Thursday because the manager is unavailable.","Our team needs to improve communication with customers.","I would appreciate your feedback on the new training program.","The company plans to introduce several changes next month.","Employees should report any technical problems as soon as possible.","We need to make sure that all information is accurate.","The supervisor asked everyone to arrive ten minutes early.","Customer satisfaction is one of the company's main priorities.","The project was successful because the team worked together.","Please contact me if you have any questions about the process.","We will review the results and discuss the next steps tomorrow."],
-recon:["Last year, the company introduced a flexible working policy. Employees were allowed to work from home for two days each week. The policy was introduced to improve work-life balance and reduce commuting time. After several months, managers found that productivity remained stable while employee satisfaction increased.","A small team was responsible for organizing a customer event. They created a detailed schedule, contacted suppliers, and assigned responsibilities to each team member. On the day of the event, one supplier arrived late. The team quickly adjusted the schedule, and the event was completed successfully.","Maria noticed that several customers were waiting for assistance at the service desk. She asked a colleague to help while she handled the most urgent request. By working together, they were able to reduce the waiting time. Their manager later praised them for responding calmly and efficiently.","The company wanted to reduce unnecessary printing in its offices. Employees were encouraged to use digital documents whenever possible. The company also placed recycling boxes near the printers. After three months, paper usage had fallen significantly, and employees had become more aware of environmentally friendly practices."],
-emails:[{to:"your manager",scenario:"Your manager is planning a team-bonding trip and has asked you for suggestions. Write an email recommending how the trip should be organized.",themes:["Hotel pricing — suggest a reasonable budget or type of hotel and explain why.","Number of activities — suggest how many activities should be included and explain your choice.","Team bonding — suggest activities that encourage employees to interact and work together."]},{to:"your supervisor",scenario:"Your department is considering a new employee recognition program. Your supervisor wants your recommendations.",themes:["Recognition method — suggest a practical way to recognize employees.","Cost — explain how the company can keep the program affordable.","Team morale — explain how the program could improve motivation and teamwork."]}]};
+import { useEffect, useRef, useState } from "react";
 
-const totals=[1,20,15,4,1];
-const meta=[
- ["PART A","Typing","Type the displayed passage as accurately as possible within 60 seconds. Your speed and accuracy are recorded.","60 seconds"],
- ["PART B","Sentence Completion","Each sentence has one missing word. Type the single word that best completes the sentence. Every question has its own 25-second timer and submits automatically when time expires.","20 questions · 25 seconds each"],
- ["PART C","Dictation","Click Play to hear the sentence. In this simulator the audio will NOT start automatically. Listen carefully and type exactly what you hear. The 25-second timer starts only when you click Play. After it starts, the question submits automatically when the timer reaches zero.","15 questions · 25 seconds each"],
- ["PART D","Passage Reconstruction","Read the passage for 30 seconds. It will then disappear. You will have 90 seconds to reconstruct the meaning in your own words, including the important details. Both phases are timed automatically.","4 questions · 30s read + 90s write"],
- ["PART E","E-mail Writing","Write a professional workplace email of at least 100 words. You must address all three listed themes. Focus on clear organization, relevant ideas, grammar, vocabulary, and professional tone. The 9-minute timer submits automatically.","1 email · 9 minutes"]
+const DATA = {
+  typing:
+    "Leadership is important in today's workplace because effective leaders help teams stay focused on common goals. A good leader listens to employees, communicates expectations clearly, and provides useful feedback. Leadership is not simply about giving instructions; it is also about supporting people when problems arise. When employees trust their leaders, they are more likely to share ideas, take responsibility, and work together to improve results.",
+
+  sentences: [
+    [
+      "The customer asked us to provide a more detailed explanation of the billing ______.",
+      "breakdown",
+    ],
+    [
+      "Please ______ the report carefully before sending it to the manager.",
+      "review",
+    ],
+    [
+      "The company introduced a new policy to improve employee ______.",
+      "retention",
+    ],
+    ["We need to reach an agreement that is fair to ______ parties.", "both"],
+    [
+      "The meeting was postponed ______ several team members were unavailable.",
+      "because",
+    ],
+    [
+      "The support team responded ______ to the customer's request.",
+      "promptly",
+    ],
+    [
+      "Employees are encouraged to ______ feedback after completing the training.",
+      "provide",
+    ],
+    [
+      "The project was completed on time despite several unexpected ______.",
+      "delays",
+    ],
+    [
+      "Please make sure that all documents are ______ before the meeting.",
+      "available",
+    ],
+    [
+      "The manager asked whether we could ______ the deadline by two days.",
+      "extend",
+    ],
+    [
+      "Good communication can help prevent unnecessary ______ between colleagues.",
+      "misunderstandings",
+    ],
+    [
+      "The new system is expected to ______ the way customer requests are handled.",
+      "streamline",
+    ],
+    [
+      "We should consider the cost ______ before making a final decision.",
+      "implications",
+    ],
+    ["The team worked together to ______ the technical issue.", "resolve"],
+    ["I would appreciate your ______ on the proposed schedule.", "feedback"],
+    [
+      "The company offers flexible working arrangements to improve employee ______.",
+      "satisfaction",
+    ],
+    [
+      "Before making a decision, we should ______ all the available options.",
+      "consider",
+    ],
+    [
+      "The training session will focus ______ customer communication skills.",
+      "on",
+    ],
+    [
+      "The manager praised the employee for handling the situation ______.",
+      "professionally",
+    ],
+    ["Please let me know if you require any ______ information.", "additional"],
+  ],
+
+  dictation: [
+    "Could you send me the updated schedule before the end of the day?",
+    "The customer was satisfied after the support team resolved the issue.",
+    "We should discuss the proposal before making a final decision.",
+    "Please remember to attach the document to your email.",
+    "The meeting has been moved to Thursday because the manager is unavailable.",
+    "Our team needs to improve communication with customers.",
+    "I would appreciate your feedback on the new training program.",
+    "The company plans to introduce several changes next month.",
+    "Employees should report any technical problems as soon as possible.",
+    "We need to make sure that all information is accurate.",
+    "The supervisor asked everyone to arrive ten minutes early.",
+    "Customer satisfaction is one of the company's main priorities.",
+    "The project was successful because the team worked together.",
+    "Please contact me if you have any questions about the process.",
+    "We will review the results and discuss the next steps tomorrow.",
+  ],
+
+  recon: [
+    "Last year, the company introduced a flexible working policy. Employees were allowed to work from home for two days each week. The policy was introduced to improve work-life balance and reduce commuting time. After several months, managers found that productivity remained stable while employee satisfaction increased.",
+
+    "A small team was responsible for organizing a customer event. They created a detailed schedule, contacted suppliers, and assigned responsibilities to each team member. On the day of the event, one supplier arrived late. The team quickly adjusted the schedule, and the event was completed successfully.",
+
+    "Maria noticed that several customers were waiting for assistance at the service desk. She asked a colleague to help while she handled the most urgent request. By working together, they were able to reduce the waiting time. Their manager later praised them for responding calmly and efficiently.",
+
+    "The company wanted to reduce unnecessary printing in its offices. Employees were encouraged to use digital documents whenever possible. The company also placed recycling boxes near the printers. After three months, paper usage had fallen significantly, and employees had become more aware of environmentally friendly practices.",
+  ],
+
+  emails: [
+    {
+      to: "your manager",
+      scenario:
+        "Your manager is planning a team-bonding trip and has asked you for suggestions. Write an email recommending how the trip should be organized.",
+      themes: [
+        "Hotel pricing — suggest a reasonable budget or type of hotel and explain why.",
+        "Number of activities — suggest how many activities should be included and explain your choice.",
+        "Team bonding — suggest activities that encourage employees to interact and work together.",
+      ],
+    },
+    {
+      to: "your supervisor",
+      scenario:
+        "Your department is considering a new employee recognition program. Your supervisor wants your recommendations.",
+      themes: [
+        "Recognition method — suggest a practical way to recognize employees.",
+        "Cost — explain how the company can keep the program affordable.",
+        "Team morale — explain how the program could improve motivation and teamwork.",
+      ],
+    },
+  ],
+};
+
+const totals = [1, 20, 15, 4, 1];
+
+const meta = [
+  [
+    "PART A",
+    "Typing",
+    "Type the displayed passage as accurately as possible within 60 seconds. Your speed and accuracy are recorded.",
+    "60 seconds",
+  ],
+  [
+    "PART B",
+    "Sentence Completion",
+    "Each sentence has one missing word. Type the single word that best completes the sentence. Every question has its own 25-second timer and submits automatically when time expires.",
+    "20 questions · 25 seconds each",
+  ],
+  [
+    "PART C",
+    "Dictation",
+    "Click Play to hear the sentence. Audio will not start automatically. The 25-second timer starts only when you click Play. Once the timer starts, the question submits automatically when time expires.",
+    "15 questions · 25 seconds each",
+  ],
+  [
+    "PART D",
+    "Passage Reconstruction",
+    "Read the passage for 30 seconds. It will then disappear. You will have 90 seconds to reconstruct the meaning in your own words, including the important details.",
+    "4 questions · 30s read + 90s write",
+  ],
+  [
+    "PART E",
+    "E-mail Writing",
+    "Write one professional workplace email of at least 100 words. You must address all three listed themes. Focus on clear organization, relevant ideas, grammar, vocabulary, and professional tone.",
+    "1 email · 9 minutes",
+  ],
 ];
 
-function norm(s){return s.toLowerCase().replace(/[^a-z0-9'\s]/g," ").replace(/\s+/g," ").trim()}
-function tokens(s){return norm(s).split(" ").filter(Boolean)}
-function similarity(a,b){const A=tokens(a),B=tokens(b);if(!B.length)return 0;let matched=0,used=new Set();A.forEach(x=>{const j=B.findIndex((y,k)=>!used.has(k)&&y===x);if(j>=0){matched++;used.add(j)}});return Math.round(matched/B.length*100)}
-function reconScore(a,b){const sim=similarity(a,b),words=tokens(a).length,sent=(a.match(/[.!?]/g)||[]).length;return Math.max(0,Math.min(100,Math.round(sim*.7+Math.min(words/70,1)*20+Math.min(sent/4,1)*10)))}
-function emailMetrics(a,themes){const n=norm(a),words=tokens(a).length;
- const themeKeywords=["hotel","pricing","budget","cost","price","activity","activities","team","bonding","recognition","recognize","reward","morale","motivation","affordable","program","method"];
- const hits=themeKeywords.filter(k=>n.includes(k)).length;
- const coverage=Math.min(100,Math.round(hits/7*100));
- const transitions=["first","second","third","finally","also","however","therefore","in addition","moreover","overall","regarding","because","while"].filter(x=>n.includes(x)).length;
- const organization=Math.min(100,Math.round(Math.min(words/140,1)*55+Math.min(transitions/3,1)*25+(a.includes("Dear ")?10:0)+(a.includes("Regards")||a.includes("Sincerely")?10:0)));
- const sentenceCount=(a.match(/[.!?]+/g)||[]).length||1; const longSent=a.split(/[.!?]+/).filter(x=>tokens(x).length>28).length;
- const grammar=Math.max(0,Math.min(100,Math.round(88-Math.min(longSent/sentenceCount,1)*20-Math.min((a.match(/\b(he|she|it)\s+are\b|\bthey\s+is\b|\ba\s+\w+[aeiou]\w*\b/gi)||[]).length,4)*7)));
- const vocab=Math.min(100,Math.round(Math.min(new Set(tokens(a)).size/Math.max(words,1)*100*1.7 + Math.min(words/120,1)*35));
- const toneWords=["please","appreciate","recommend","suggest","would","could","thank","regards","sincerely","consider","hope"].filter(x=>n.includes(x)).length;
- const tone=Math.min(100,Math.round(Math.min(toneWords/4,1)*55+Math.min(words/100,1)*25+(a.includes("Dear ")?10:0)+(a.includes("Regards")||a.includes("Sincerely")?10:0)));
- return {coverage,organization,grammar,vocab,tone,words,themes};
-}
-function gseFromPercent(p){return Math.max(10,Math.min(90,Math.round(10+p*.8)))}
-function cefr(x){return x<30?"A1":x<40?"A2":x<50?"B1":x<60?"B1+":x<70?"B2":x<80?"C1":"C2"}
-function wordCount(s){return tokens(s).length}
-
-export default function Page(){
- const [screen,setScreen]=useState("intro"),[part,setPart]=useState(0),[idx,setIdx]=useState(0),[answer,setAnswer]=useState(""),[time,setTime]=useState(0),[running,setRunning]=useState(false),[readPhase,setReadPhase]=useState(true),[results,setResults]=useState(null),[audioPlayed,setAudioPlayed]=useState(false);
- const [records,setRecords]=useState([]);
- const startRef=useRef(0),timerRef=useRef(null),typingRef=useRef({correct:0,total:0,elapsed:1});
- function stop(){clearInterval(timerRef.current);timerRef.current=null;setRunning(false)}
- function startTimer(seconds,callback){stop();setTime(seconds);setRunning(true);startRef.current=Date.now();timerRef.current=setInterval(()=>setTime(t=>{if(t<=1){clearInterval(timerRef.current);timerRef.current=null;setRunning(false);callback(true);return 0}return t-1}),1000)}
- function goToNext(){
-   if(part===4 && idx===1){buildResults(records);return}
-   if(idx<totals[part]-1){setIdx(x=>x+1);setAnswer("");setAudioPlayed(false);return}
-   setPart(p=>p+1);setIdx(0);setAnswer("");setAudioPlayed(false);setScreen("briefing");
- }
- function submitItem(auto=false){
-   stop();const a=answer.trim();const elapsed=Math.max((Date.now()-startRef.current)/1000,.1);let rec={part,question:idx+1,answer:a,autoSubmitted:auto,timeUsed:Math.min(elapsed,part===0?60:part===1||part===2?25:part===3?(readPhase?30:120):540)};
-   if(part===0){let correct=0;[...a].forEach((c,i)=>{if(c===DATA.typing[i])correct++});typingRef.current={correct,total:a.length,elapsed};rec.score=Math.round((correct/Math.max(1,a.length))*100);rec.correctChars=correct;rec.typedChars=a.length;rec.reference=DATA.typing;}
-   if(part===1){rec.score=a.toLowerCase()===DATA.sentences[idx][1].toLowerCase()?100:0;rec.reference=DATA.sentences[idx][1];rec.prompt=DATA.sentences[idx][0];}
-   if(part===2){rec.score=similarity(a,DATA.dictation[idx]);rec.reference=DATA.dictation[idx];}
-   if(part===3){rec.score=reconScore(a,DATA.recon[idx]);rec.reference=DATA.recon[idx];}
-   if(part===4){rec.email=emailMetrics(a,DATA.emails[idx].themes);rec.score=Math.round(rec.email.coverage*.25+rec.email.organization*.2+rec.email.grammar*.2+rec.email.vocab*.15+rec.email.tone*.2);rec.prompt=DATA.emails[idx].scenario;rec.themes=DATA.emails[idx].themes;}
-   setRecords(prev=>[...prev,rec]);goToNext();
- }
- function begin(){setRecords([]);setResults(null);setPart(0);setIdx(0);setAnswer("");setAudioPlayed(false);typingRef.current={correct:0,total:0,elapsed:1};setScreen("briefing")}
- function buildResults(allRecords){
-   const by=p=>allRecords.filter(r=>r.part===p);const avg=a=>a.length?a.reduce((x,y)=>x+y.score,0)/a.length:0;
-   const sent=avg(by(1)),dict=avg(by(2)),recon=avg(by(3)),emails=by(4);const em=emails.length?emails.reduce((acc,r)=>{Object.keys(r.email||{}).forEach(k=>{if(["coverage","organization","grammar","vocab","tone"].includes(k))acc[k]+=r.email[k]});return acc},{coverage:0,organization:0,grammar:0,vocab:0,tone:0}):{coverage:0,organization:0,grammar:0,vocab:0,tone:0};
-   if(emails.length)Object.keys(em).forEach(k=>em[k]/=emails.length);
-   const typ=typingRef.current,acc=typ.total?typ.correct/typ.total*100:0,wpm=typ.elapsed?typ.correct/5/(typ.elapsed/60):0;
-   // Practice-only GSE model: combines the same writing dimensions Pearson reports, with stronger weight on direct language evidence.
-   const grammarP=sent*.4+dict*.25+em.grammar*.35;
-   const vocabP=sent*.2+dict*.15+recon*.25+em.vocab*.4;
-   const orgP=recon*.45+em.organization*.55;
-   const toneP=em.tone;
-   const readingP=recon*.55+em.coverage*.45;
-   const overall=Math.round((grammarP+vocabP+orgP+toneP+readingP)/5);
-   const g={grammar:gseFromPercent(grammarP),vocab:gseFromPercent(vocabP),org:gseFromPercent(orgP),tone:gseFromPercent(toneP),reading:gseFromPercent(readingP)};
-   setResults({overall,cefr:cefr(gseFromPercent(overall)),wpm,acc,sent,dict,recon,emails,g,records:allRecords});setScreen("results");
- }
- useEffect(()=>{
-   if(screen!=="test")return;
-   const id=setTimeout(()=>{
-     if(part===0)startTimer(60,()=>submitItem(true));
-     else if(part===1)startTimer(25,()=>submitItem(true));
-     else if(part===2){setTime(0);setRunning(false);setAudioPlayed(false);}
-     else if(part===3){setReadPhase(true);startTimer(30,()=>{setReadPhase(false);startTimer(90,()=>submitItem(true))})}
-     else if(part===4)startTimer(540,()=>submitItem(true));
-   },30);
-   return()=>{clearTimeout(id);stop()}
- },[screen,part,idx]);
- function playDictation(){if(audioPlayed)return;setAudioPlayed(true);startTimer(25,()=>submitItem(true));if("speechSynthesis"in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(DATA.dictation[idx]);u.lang="en-US";u.rate=.92;speechSynthesis.speak(u)}}
- const m=meta[part];
- const progress=(idx/totals[part])*100;
- if(screen==="intro")return <main className="app"><Header/><section className="center"><div className="kicker">FULL MOCK TEST</div><h1>Versant Writing Practice</h1><p className="desc">A Monkeytype-inspired simulator with timed sections, automatic submission, section briefings, clickable dictation audio, and an answer-by-answer analysis report.</p><div className="card"><b>Test format</b><ul><li>Typing — 60 seconds</li><li>Sentence Completion — 20 × 25 seconds</li><li>Dictation — 15 × 25 seconds</li><li>Passage Reconstruction — 4 × (30s reading + 90s writing)</li><li>E-mail Writing — 1 × 9 minutes</li></ul></div><div className="card note">Scoring is a practice estimate modeled around the Versant Writing dimensions. Pearson's exact scoring algorithm is proprietary, so no third-party simulator can reproduce it exactly.</div><button onClick={begin}>Start Full Test</button></section></main>;
- if(screen==="briefing")return <main className="app"><Header/><section className="center briefing"><div className="kicker">UP NEXT · {m[0]}</div><h1>{m[1]}</h1><div className="brief-card"><div className="brief-time">{m[3]}</div><p>{m[2]}</p><div className="brief-rules"><div><b>What to do</b><span>{part===0?"Type the passage accurately.":part===1?"Enter one missing word.":part===2?"Click Play, listen, then type the sentence.":part===3?"Read first, then rewrite from memory.":"Write a complete professional email covering all 3 themes."}</span></div><div><b>Timer</b><span>When the timer reaches zero, the current question is submitted automatically.</span></div><div><b>Navigation</b><span>You cannot go back after submitting. Work efficiently and move forward.</span></div></div></div><button onClick={()=>setScreen("test")}>Begin {m[1]}</button></section></main>;
- if(screen==="results")return <Results results={results} onAgain={()=>{setScreen("intro");setRecords([])}}/>;
- return <main className="app"><Header/><section className="center"><div className="parthead"><div><div className="kicker">{m[0]} · QUESTION {idx+1}/{totals[part]}</div><h1>{m[1]}</h1></div><div className="timer">{String(Math.floor(time/60)).padStart(2,"0")}:{String(time%60).padStart(2,"0")}</div></div><div className="progress"><i style={{width:`${progress}%`}}/></div>
- {part===0&&<div className="card"><Typing passage={DATA.typing} answer={answer} setAnswer={setAnswer}/></div>}
- {part===1&&<div className="card"><div className="question">{DATA.sentences[idx][0]}</div><input autoFocus value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Type one word..." /></div>}
- {part===2&&<div className="card"><div className="audio-panel"><button className="play" onClick={playDictation} disabled={audioPlayed}>{audioPlayed?"✓ Played":"▶ Play sentence"}</button><span>{audioPlayed?"Audio played. Type what you heard.":"Click Play when you are ready. Audio will not start by itself."}</span></div><textarea autoFocus value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Type what you hear..."/></div>}
- {part===3&&<div className="card">{readPhase?<><div className="meta">READING PHASE · 30 seconds</div><div className="recon">{DATA.recon[idx]}</div></>:<><div className="meta">WRITING PHASE · 90 seconds</div><textarea autoFocus value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Rewrite the passage in your own words. Include the important details."/></>}</div>}
- {part===4&&<div className="card"><p className="desc"><b>To:</b> {DATA.emails[idx].to}</p><p>{DATA.emails[idx].scenario}</p><div className="themes">{DATA.emails[idx].themes.map((t,i)=><div key={t}><b>{i+1}.</b> {t}</div>)}</div><p className="note">Minimum 100 words · Address all three themes · Professional workplace tone</p><textarea autoFocus value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Write your email here..."/></div>}
- <div className="actions"><button className="secondary" onClick={()=>submitItem(false)}>Submit / Next</button><span className="auto">Auto-submit is ON</span></div></section></main>
+function norm(s) {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9'\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-function Results({results,onAgain}){const [filter,setFilter]=useState("all");const visible=filter==="all"?results.records:results.records.filter(r=>String(r.part)===filter);return <main className="app"><Header/><section className="center results"><div className="kicker">RESULT REPORT</div><h1>Your Versant-style analysis</h1><div className="hero-score"><div><span>Estimated overall</span><strong>{results.overall}</strong><small>/90 GSE · {results.cefr}</small></div><div className="result-note">Practice estimate only — Pearson's production scoring is proprietary.</div></div><div className="card"><h3>Writing dimensions</h3>{[["Grammar",results.g.grammar],["Vocabulary",results.g.vocab],["Organization",results.g.org],["Voice & Tone",results.g.tone],["Reading Comprehension",results.g.reading]].map(([n,v])=><div className="barrow" key={n}><span>{n}</span><div className="bar"><i style={{width:`${v/90*100}%`}}/></div><b>{v}</b></div>)}</div><div className="grid">{[["Typing speed",Math.round(results.wpm)+" WPM"],["Typing accuracy",Math.round(results.acc)+"%"],["Sentence completion",Math.round(results.sent)+"%"],["Dictation",Math.round(results.dict)+"%"],["Reconstruction",Math.round(results.recon)+"%"],["Emails",results.emails.length+" / 1"]].map(x=><div className="mini" key={x[0]}><small>{x[0]}</small><strong>{x[1]}</strong></div>)}</div><div className="card"><h3>How to improve</h3><p className="desc">{results.g.org<55&&"Organization: use an opening, then one clear paragraph per theme, with logical transitions. "}{results.g.tone<60&&"Voice & Tone: use a polite, professional opening and closing and make recommendations tactfully. "}{results.g.vocab<60&&"Vocabulary: use precise workplace vocabulary naturally rather than forcing advanced words. "}{results.g.grammar<60&&"Grammar: review sentence boundaries, articles, tense, and subject–verb agreement. "}{results.g.org>=55&&results.g.tone>=60&&results.g.vocab>=60&&results.g.grammar>=60&&"Good balance overall. Focus next on speed, precision, and richer supporting details."}</p></div><div className="answers"><div className="answers-head"><div><h2>All candidate answers</h2><p className="desc">Review exactly what was submitted, the reference where available, the estimated item score, and whether the timer submitted it.</p></div><select value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">All sections</option><option value="0">Part A</option><option value="1">Part B</option><option value="2">Part C</option><option value="3">Part D</option><option value="4">Part E</option></select></div>{visible.map((r,n)=><AnswerCard key={`${r.part}-${r.question}`} r={r} number={n+1}/>)}</div><button onClick={onAgain}>Take Test Again</button></section></main>}
-function AnswerCard({r,number}){return <div className="answer-card"><div className="answer-top"><b>#{number} · Part {String.fromCharCode(65+r.part)} · Q{r.question}</b><span>{r.score}% {r.autoSubmitted&&"· Auto-submitted"}</span></div>{r.prompt&&<div className="answer-prompt">{r.prompt}</div>}<div className="candidate"><small>CANDIDATE ANSWER</small><pre>{r.answer||"[No answer submitted]"}</pre></div>{r.reference&&<div className="reference"><small>{r.part===1?"CORRECT WORD":"REFERENCE / SOURCE"}</small><pre>{r.reference}</pre></div>}{r.email&&<div className="email-breakdown"><span>Coverage {r.email.coverage}%</span><span>Organization {r.email.organization}%</span><span>Grammar {r.email.grammar}%</span><span>Vocabulary {r.email.vocab}%</span><span>Tone {r.email.tone}%</span><span>Words {r.email.words}</span></div>}</div>}
-function Header(){return <header className="nav"><div className="brand">versant<span>•</span>practice</div><small>Writing Test Simulator</small></header>}
-function Typing({passage,answer,setAnswer}){return <><div className="typing">{[...passage].map((c,i)=><span className={i<answer.length?(answer[i]===c?"correct":"wrong"):i===answer.length?"current":""} key={i}>{c}</span>)}</div><textarea autoFocus value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Start typing here..." spellCheck="false"/></>}
+function tokens(s) {
+  return norm(s).split(" ").filter(Boolean);
+}
+
+function similarity(a, b) {
+  const A = tokens(a);
+  const B = tokens(b);
+
+  if (!B.length) return 0;
+
+  let matched = 0;
+  const used = new Set();
+
+  A.forEach((x) => {
+    const j = B.findIndex((y, k) => !used.has(k) && y === x);
+
+    if (j >= 0) {
+      matched++;
+      used.add(j);
+    }
+  });
+
+  return Math.round((matched / B.length) * 100);
+}
+
+function reconScore(a, b) {
+  const sim = similarity(a, b);
+  const words = tokens(a).length;
+  const sent = (a.match(/[.!?]/g) || []).length;
+
+  return Math.max(
+    0,
+    Math.min(
+      100,
+      Math.round(
+        sim * 0.7 + Math.min(words / 70, 1) * 20 + Math.min(sent / 4, 1) * 10,
+      ),
+    ),
+  );
+}
+
+function emailMetrics(a, themes) {
+  const n = norm(a);
+  const words = tokens(a).length;
+
+  const themeKeywords = [
+    "hotel",
+    "pricing",
+    "budget",
+    "cost",
+    "price",
+    "activity",
+    "activities",
+    "team",
+    "bonding",
+    "recognition",
+    "recognize",
+    "reward",
+    "morale",
+    "motivation",
+    "affordable",
+    "program",
+    "method",
+  ];
+
+  const hits = themeKeywords.filter((k) => n.includes(k)).length;
+
+  const coverage = Math.min(100, Math.round((hits / 7) * 100));
+
+  const transitions = [
+    "first",
+    "second",
+    "third",
+    "finally",
+    "also",
+    "however",
+    "therefore",
+    "in addition",
+    "moreover",
+    "overall",
+    "regarding",
+    "because",
+    "while",
+  ].filter((x) => n.includes(x)).length;
+
+  const organization = Math.min(
+    100,
+    Math.round(
+      Math.min(words / 140, 1) * 55 +
+        Math.min(transitions / 3, 1) * 25 +
+        (a.includes("Dear ") ? 10 : 0) +
+        (a.includes("Regards") || a.includes("Sincerely") ? 10 : 0),
+    ),
+  );
+
+  const sentenceCount = (a.match(/[.!?]+/g) || []).length || 1;
+
+  const longSent = a
+    .split(/[.!?]+/)
+    .filter((x) => tokens(x).length > 28).length;
+
+  const grammar = Math.max(
+    0,
+    Math.min(
+      100,
+      Math.round(
+        88 -
+          Math.min(longSent / sentenceCount, 1) * 20 -
+          Math.min(
+            (
+              a.match(
+                /\b(he|she|it)\s+are\b|\bthey\s+is\b|\ba\s+\w+[aeiou]\w*\b/gi,
+              ) || []
+            ).length,
+            4,
+          ) *
+            7,
+      ),
+    ),
+  );
+
+  const vocab = Math.min(
+    100,
+    Math.round(
+      Math.min((new Set(tokens(a)).size / Math.max(words, 1)) * 100 * 1.7, 65) +
+        Math.min(words / 120, 1) * 35,
+    ),
+  );
+
+  const toneWords = [
+    "please",
+    "appreciate",
+    "recommend",
+    "suggest",
+    "would",
+    "could",
+    "thank",
+    "regards",
+    "sincerely",
+    "consider",
+    "hope",
+  ].filter((x) => n.includes(x)).length;
+
+  const tone = Math.min(
+    100,
+    Math.round(
+      Math.min(toneWords / 4, 1) * 55 +
+        Math.min(words / 100, 1) * 25 +
+        (a.includes("Dear ") ? 10 : 0) +
+        (a.includes("Regards") || a.includes("Sincerely") ? 10 : 0),
+    ),
+  );
+
+  return {
+    coverage,
+    organization,
+    grammar,
+    vocab,
+    tone,
+    words,
+    themes,
+  };
+}
+
+function gseFromPercent(p) {
+  return Math.max(10, Math.min(90, Math.round(10 + p * 0.8)));
+}
+
+function cefr(x) {
+  return x < 30
+    ? "A1"
+    : x < 40
+      ? "A2"
+      : x < 50
+        ? "B1"
+        : x < 60
+          ? "B1+"
+          : x < 70
+            ? "B2"
+            : x < 80
+              ? "C1"
+              : "C2";
+}
+
+function wordCount(s) {
+  return tokens(s).length;
+}
+
+export default function Page() {
+  const [screen, setScreen] = useState("intro");
+  const [part, setPart] = useState(0);
+  const [idx, setIdx] = useState(0);
+  const [answer, setAnswer] = useState("");
+  const [time, setTime] = useState(0);
+  const [running, setRunning] = useState(false);
+  const [readPhase, setReadPhase] = useState(true);
+  const [results, setResults] = useState(null);
+  const [audioPlayed, setAudioPlayed] = useState(false);
+  const [records, setRecords] = useState([]);
+
+  const startRef = useRef(0);
+  const timerRef = useRef(null);
+  const typingRef = useRef({
+    correct: 0,
+    total: 0,
+    elapsed: 1,
+  });
+
+  function stop() {
+    clearInterval(timerRef.current);
+    timerRef.current = null;
+    setRunning(false);
+  }
+
+  function startTimer(seconds, callback) {
+    stop();
+
+    setTime(seconds);
+    setRunning(true);
+    startRef.current = Date.now();
+
+    timerRef.current = setInterval(() => {
+      setTime((t) => {
+        if (t <= 1) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+          setRunning(false);
+          callback(true);
+          return 0;
+        }
+
+        return t - 1;
+      });
+    }, 1000);
+  }
+
+  function goToNext() {
+    /*
+      Only one email exists in the test.
+      Therefore Part E question 1 ends the test.
+    */
+    if (part === 4 && idx === 0) {
+      buildResults([...records]);
+      return;
+    }
+
+    if (idx < totals[part] - 1) {
+      setIdx((x) => x + 1);
+      setAnswer("");
+      setAudioPlayed(false);
+      return;
+    }
+
+    const nextPart = part + 1;
+
+    setPart(nextPart);
+    setIdx(0);
+    setAnswer("");
+    setAudioPlayed(false);
+    setReadPhase(true);
+    setScreen("briefing");
+  }
+
+  function submitItem(auto = false) {
+    stop();
+
+    const a = answer.trim();
+
+    const elapsed = Math.max((Date.now() - startRef.current) / 1000, 0.1);
+
+    let maxTime = 25;
+
+    if (part === 0) maxTime = 60;
+    if (part === 3) maxTime = readPhase ? 30 : 90;
+    if (part === 4) maxTime = 540;
+
+    const rec = {
+      part,
+      question: idx + 1,
+      answer: a,
+      autoSubmitted: auto,
+      timeUsed: Math.min(elapsed, maxTime),
+    };
+
+    if (part === 0) {
+      let correct = 0;
+
+      [...a].forEach((c, i) => {
+        if (c === DATA.typing[i]) correct++;
+      });
+
+      typingRef.current = {
+        correct,
+        total: a.length,
+        elapsed,
+      };
+
+      rec.score = Math.round((correct / Math.max(1, a.length)) * 100);
+
+      rec.correctChars = correct;
+      rec.typedChars = a.length;
+      rec.reference = DATA.typing;
+    }
+
+    if (part === 1) {
+      rec.score =
+        a.toLowerCase() === DATA.sentences[idx][1].toLowerCase() ? 100 : 0;
+
+      rec.reference = DATA.sentences[idx][1];
+      rec.prompt = DATA.sentences[idx][0];
+    }
+
+    if (part === 2) {
+      rec.score = similarity(a, DATA.dictation[idx]);
+
+      rec.reference = DATA.dictation[idx];
+    }
+
+    if (part === 3) {
+      rec.score = reconScore(a, DATA.recon[idx]);
+
+      rec.reference = DATA.recon[idx];
+    }
+
+    if (part === 4) {
+      rec.email = emailMetrics(a, DATA.emails[idx].themes);
+
+      rec.score = Math.round(
+        rec.email.coverage * 0.25 +
+          rec.email.organization * 0.2 +
+          rec.email.grammar * 0.2 +
+          rec.email.vocab * 0.15 +
+          rec.email.tone * 0.2,
+      );
+
+      rec.prompt = DATA.emails[idx].scenario;
+      rec.themes = DATA.emails[idx].themes;
+    }
+
+    setRecords((prev) => {
+      const updated = [...prev, rec];
+
+      if (part === 4 && idx === 0) {
+        buildResults(updated);
+      } else {
+        setTimeout(() => {
+          goToNext();
+        }, 0);
+      }
+
+      return updated;
+    });
+  }
+
+  function begin() {
+    setRecords([]);
+    setResults(null);
+    setPart(0);
+    setIdx(0);
+    setAnswer("");
+    setAudioPlayed(false);
+
+    typingRef.current = {
+      correct: 0,
+      total: 0,
+      elapsed: 1,
+    };
+
+    setScreen("briefing");
+  }
+
+  function buildResults(allRecords) {
+    const by = (p) => allRecords.filter((r) => r.part === p);
+
+    const avg = (a) =>
+      a.length ? a.reduce((x, y) => x + y.score, 0) / a.length : 0;
+
+    const sent = avg(by(1));
+    const dict = avg(by(2));
+    const recon = avg(by(3));
+    const emails = by(4);
+
+    const em = emails.length
+      ? emails.reduce(
+          (acc, r) => {
+            Object.keys(r.email || {}).forEach((k) => {
+              if (
+                [
+                  "coverage",
+                  "organization",
+                  "grammar",
+                  "vocab",
+                  "tone",
+                ].includes(k)
+              ) {
+                acc[k] += r.email[k];
+              }
+            });
+
+            return acc;
+          },
+          {
+            coverage: 0,
+            organization: 0,
+            grammar: 0,
+            vocab: 0,
+            tone: 0,
+          },
+        )
+      : {
+          coverage: 0,
+          organization: 0,
+          grammar: 0,
+          vocab: 0,
+          tone: 0,
+        };
+
+    if (emails.length) {
+      Object.keys(em).forEach((k) => (em[k] /= emails.length));
+    }
+
+    const typ = typingRef.current;
+
+    const acc = typ.total ? (typ.correct / typ.total) * 100 : 0;
+
+    const wpm = typ.elapsed ? typ.correct / 5 / (typ.elapsed / 60) : 0;
+
+    const grammarP = sent * 0.4 + dict * 0.25 + em.grammar * 0.35;
+
+    const vocabP = sent * 0.2 + dict * 0.15 + recon * 0.25 + em.vocab * 0.4;
+
+    const orgP = recon * 0.45 + em.organization * 0.55;
+
+    const toneP = em.tone;
+
+    const readingP = recon * 0.55 + em.coverage * 0.45;
+
+    const overall = Math.round(
+      (grammarP + vocabP + orgP + toneP + readingP) / 5,
+    );
+
+    const g = {
+      grammar: gseFromPercent(grammarP),
+      vocab: gseFromPercent(vocabP),
+      org: gseFromPercent(orgP),
+      tone: gseFromPercent(toneP),
+      reading: gseFromPercent(readingP),
+    };
+
+    setResults({
+      overall,
+      cefr: cefr(gseFromPercent(overall)),
+      wpm,
+      acc,
+      sent,
+      dict,
+      recon,
+      emails,
+      g,
+      records: allRecords,
+    });
+
+    setScreen("results");
+  }
+
+  useEffect(() => {
+    if (screen !== "test") return;
+
+    const id = setTimeout(() => {
+      if (part === 0) {
+        startTimer(60, () => submitItem(true));
+      } else if (part === 1) {
+        startTimer(25, () => submitItem(true));
+      } else if (part === 2) {
+        /*
+          Dictation timer MUST NOT start here.
+          It starts only inside playDictation().
+        */
+        setTime(0);
+        setRunning(false);
+        setAudioPlayed(false);
+      } else if (part === 3) {
+        setReadPhase(true);
+
+        startTimer(30, () => {
+          setReadPhase(false);
+
+          startTimer(90, () => submitItem(true));
+        });
+      } else if (part === 4) {
+        startTimer(540, () => submitItem(true));
+      }
+    }, 30);
+
+    return () => {
+      clearTimeout(id);
+      stop();
+    };
+  }, [screen, part, idx]);
+
+  function playDictation() {
+    if (audioPlayed) return;
+
+    /*
+      Audio and timer start from the same click.
+    */
+    setAudioPlayed(true);
+
+    startTimer(25, () => submitItem(true));
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(DATA.dictation[idx]);
+
+      utterance.lang = "en-US";
+      utterance.rate = 0.92;
+
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+
+  const m = meta[part];
+
+  const progress = ((idx + 1) / totals[part]) * 100;
+
+  if (screen === "intro") {
+    return (
+      <main className="app">
+        <Header />
+
+        <section className="center">
+          <div className="kicker">FULL MOCK TEST</div>
+
+          <h1>Versant Writing Practice</h1>
+
+          <p className="desc">
+            A Monkeytype-inspired simulator with timed sections, automatic
+            submission, section briefings, clickable dictation audio, and an
+            answer-by-answer analysis report.
+          </p>
+
+          <div className="card">
+            <b>Test format</b>
+
+            <ul>
+              <li>Typing — 60 seconds</li>
+              <li>Sentence Completion — 20 × 25 seconds</li>
+              <li>Dictation — 15 × 25 seconds</li>
+              <li>Passage Reconstruction — 4 × (30s + 90s)</li>
+              <li>E-mail Writing — 1 × 9 minutes</li>
+            </ul>
+          </div>
+
+          <div className="card note">
+            Scoring is a practice estimate modeled around Versant writing
+            dimensions. Pearson's exact scoring algorithm is proprietary.
+          </div>
+
+          <button onClick={begin}>Start Full Test</button>
+        </section>
+      </main>
+    );
+  }
+
+  if (screen === "briefing") {
+    return (
+      <main className="app">
+        <Header />
+
+        <section className="center briefing">
+          <div className="kicker">UP NEXT · {m[0]}</div>
+
+          <h1>{m[1]}</h1>
+
+          <div className="brief-card">
+            <div className="brief-time">{m[3]}</div>
+
+            <p>{m[2]}</p>
+
+            <div className="brief-rules">
+              <div>
+                <b>What to do</b>
+
+                <span>
+                  {part === 0
+                    ? "Type the passage accurately."
+                    : part === 1
+                      ? "Enter one missing word."
+                      : part === 2
+                        ? "Click Play, listen, then type the sentence."
+                        : part === 3
+                          ? "Read first, then rewrite from memory."
+                          : "Write one complete professional email covering all 3 themes."}
+                </span>
+              </div>
+
+              <div>
+                <b>Timer</b>
+
+                <span>
+                  {part === 2
+                    ? "The timer starts only after you click Play."
+                    : "When the timer reaches zero, the current question is submitted automatically."}
+                </span>
+              </div>
+
+              <div>
+                <b>Navigation</b>
+
+                <span>
+                  You cannot go back after submitting. Work efficiently and move
+                  forward.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <button onClick={() => setScreen("test")}>Begin {m[1]}</button>
+        </section>
+      </main>
+    );
+  }
+
+  if (screen === "results") {
+    return (
+      <Results
+        results={results}
+        onAgain={() => {
+          setScreen("intro");
+          setRecords([]);
+        }}
+      />
+    );
+  }
+
+  return (
+    <main className="app">
+      <Header />
+
+      <section className="center">
+        <div className="parthead">
+          <div>
+            <div className="kicker">
+              {m[0]} · QUESTION {idx + 1}/{totals[part]}
+            </div>
+
+            <h1>{m[1]}</h1>
+          </div>
+
+          <div className="timer">
+            {String(Math.floor(time / 60)).padStart(2, "0")}:
+            {String(time % 60).padStart(2, "0")}
+          </div>
+        </div>
+
+        <div className="progress">
+          <i
+            style={{
+              width: `${progress}%`,
+            }}
+          />
+        </div>
+
+        {part === 0 && (
+          <div className="card">
+            <Typing
+              passage={DATA.typing}
+              answer={answer}
+              setAnswer={setAnswer}
+            />
+          </div>
+        )}
+
+        {part === 1 && (
+          <div className="card">
+            <div className="question">{DATA.sentences[idx][0]}</div>
+
+            <input
+              autoFocus
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              placeholder="Type one word..."
+            />
+          </div>
+        )}
+
+        {part === 2 && (
+          <div className="card">
+            <div className="audio-panel">
+              <button
+                className="play"
+                onClick={playDictation}
+                disabled={audioPlayed}
+              >
+                {audioPlayed ? "✓ Played" : "▶ Play sentence"}
+              </button>
+
+              <span>
+                {audioPlayed
+                  ? "Audio played. The 25-second timer is running."
+                  : "Click Play when you are ready. The timer will start immediately."}
+              </span>
+            </div>
+
+            <textarea
+              autoFocus
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              placeholder="Type what you hear..."
+            />
+          </div>
+        )}
+
+        {part === 3 && (
+          <div className="card">
+            {readPhase ? (
+              <>
+                <div className="meta">READING PHASE · 30 seconds</div>
+
+                <div className="recon">{DATA.recon[idx]}</div>
+              </>
+            ) : (
+              <>
+                <div className="meta">WRITING PHASE · 90 seconds</div>
+
+                <textarea
+                  autoFocus
+                  value={answer}
+                  onChange={(e) => setAnswer(e.target.value)}
+                  placeholder="Rewrite the passage in your own words. Include the important details."
+                />
+              </>
+            )}
+          </div>
+        )}
+
+        {part === 4 && (
+          <div className="card">
+            <p className="desc">
+              <b>To:</b> {DATA.emails[idx].to}
+            </p>
+
+            <p>{DATA.emails[idx].scenario}</p>
+
+            <div className="themes">
+              {DATA.emails[idx].themes.map((t, i) => (
+                <div key={t}>
+                  <b>{i + 1}.</b> {t}
+                </div>
+              ))}
+            </div>
+
+            <p className="note">
+              Minimum 100 words · Address all three themes · Professional
+              workplace tone
+            </p>
+
+            <textarea
+              autoFocus
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              placeholder="Write your email here..."
+            />
+          </div>
+        )}
+
+        <div className="actions">
+          <button className="secondary" onClick={() => submitItem(false)}>
+            Submit / Next
+          </button>
+
+          <span className="auto">Auto-submit is ON</span>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function Results({ results, onAgain }) {
+  const [filter, setFilter] = useState("all");
+
+  const visible =
+    filter === "all"
+      ? results.records
+      : results.records.filter((r) => String(r.part) === filter);
+
+  return (
+    <main className="app">
+      <Header />
+
+      <section className="center results">
+        <div className="kicker">RESULT REPORT</div>
+
+        <h1>Your Versant-style analysis</h1>
+
+        <div className="hero-score">
+          <div>
+            <span>Estimated overall</span>
+
+            <strong>{results.overall}</strong>
+
+            <small>/90 GSE · {results.cefr}</small>
+          </div>
+
+          <div className="result-note">
+            Practice estimate only — Pearson's production scoring is
+            proprietary.
+          </div>
+        </div>
+
+        <div className="card">
+          <h3>Writing dimensions</h3>
+
+          {[
+            ["Grammar", results.g.grammar],
+            ["Vocabulary", results.g.vocab],
+            ["Organization", results.g.org],
+            ["Voice & Tone", results.g.tone],
+            ["Reading Comprehension", results.g.reading],
+          ].map(([n, v]) => (
+            <div className="barrow" key={n}>
+              <span>{n}</span>
+
+              <div className="bar">
+                <i
+                  style={{
+                    width: `${(v / 90) * 100}%`,
+                  }}
+                />
+              </div>
+
+              <b>{v}</b>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid">
+          {[
+            ["Typing speed", `${Math.round(results.wpm)} WPM`],
+            ["Typing accuracy", `${Math.round(results.acc)}%`],
+            ["Sentence completion", `${Math.round(results.sent)}%`],
+            ["Dictation", `${Math.round(results.dict)}%`],
+            ["Reconstruction", `${Math.round(results.recon)}%`],
+            ["Emails", `${results.emails.length} / 1`],
+          ].map((x) => (
+            <div className="mini" key={x[0]}>
+              <small>{x[0]}</small>
+              <strong>{x[1]}</strong>
+            </div>
+          ))}
+        </div>
+
+        <div className="card">
+          <h3>How to improve</h3>
+
+          <p className="desc">
+            {results.g.org < 55 &&
+              "Organization: use an opening, then one clear paragraph per theme, with logical transitions. "}
+
+            {results.g.tone < 60 &&
+              "Voice & Tone: use a polite, professional opening and closing and make recommendations tactfully. "}
+
+            {results.g.vocab < 60 &&
+              "Vocabulary: use precise workplace vocabulary naturally rather than forcing advanced words. "}
+
+            {results.g.grammar < 60 &&
+              "Grammar: review sentence boundaries, articles, tense, and subject–verb agreement. "}
+
+            {results.g.org >= 55 &&
+              results.g.tone >= 60 &&
+              results.g.vocab >= 60 &&
+              results.g.grammar >= 60 &&
+              "Good balance overall. Focus next on speed, precision, and richer supporting details."}
+          </p>
+        </div>
+
+        <div className="answers">
+          <div className="answers-head">
+            <div>
+              <h2>All candidate answers</h2>
+
+              <p className="desc">
+                Review exactly what was submitted, the reference where
+                available, the estimated item score, and whether the timer
+                submitted it.
+              </p>
+            </div>
+
+            <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+              <option value="all">All sections</option>
+              <option value="0">Part A</option>
+              <option value="1">Part B</option>
+              <option value="2">Part C</option>
+              <option value="3">Part D</option>
+              <option value="4">Part E</option>
+            </select>
+          </div>
+
+          {visible.map((r, n) => (
+            <AnswerCard key={`${r.part}-${r.question}`} r={r} number={n + 1} />
+          ))}
+        </div>
+
+        <button onClick={onAgain}>Take Test Again</button>
+      </section>
+    </main>
+  );
+}
+
+function AnswerCard({ r, number }) {
+  return (
+    <div className="answer-card">
+      <div className="answer-top">
+        <b>
+          #{number} · Part {String.fromCharCode(65 + r.part)} · Q{r.question}
+        </b>
+
+        <span>
+          {r.score}%{r.autoSubmitted && " · Auto-submitted"}
+        </span>
+      </div>
+
+      {r.prompt && <div className="answer-prompt">{r.prompt}</div>}
+
+      <div className="candidate">
+        <small>CANDIDATE ANSWER</small>
+
+        <pre>{r.answer || "[No answer submitted]"}</pre>
+      </div>
+
+      {r.reference && (
+        <div className="reference">
+          <small>{r.part === 1 ? "CORRECT WORD" : "REFERENCE / SOURCE"}</small>
+
+          <pre>{r.reference}</pre>
+        </div>
+      )}
+
+      {r.email && (
+        <div className="email-breakdown">
+          <span>Coverage {r.email.coverage}%</span>
+
+          <span>Organization {r.email.organization}%</span>
+
+          <span>Grammar {r.email.grammar}%</span>
+
+          <span>Vocabulary {r.email.vocab}%</span>
+
+          <span>Tone {r.email.tone}%</span>
+
+          <span>Words {r.email.words}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Header() {
+  return (
+    <header className="nav">
+      <div className="brand">
+        versant<span>•</span>practice
+      </div>
+
+      <small>Writing Test Simulator</small>
+    </header>
+  );
+}
+
+function Typing({ passage, answer, setAnswer }) {
+  return (
+    <>
+      <div className="typing">
+        {[...passage].map((c, i) => (
+          <span
+            className={
+              i < answer.length
+                ? answer[i] === c
+                  ? "correct"
+                  : "wrong"
+                : i === answer.length
+                  ? "current"
+                  : ""
+            }
+            key={i}
+          >
+            {c}
+          </span>
+        ))}
+      </div>
+
+      <textarea
+        autoFocus
+        value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+        placeholder="Start typing here..."
+        spellCheck="false"
+      />
+    </>
+  );
+}
